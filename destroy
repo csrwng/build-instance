@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -euo pipefail
+
+cd ~/code/build-instance
+terraform destroy -var region=us-east-2 -var myip=$(curl ifconfig.me 2>/dev/null) -auto-approve
