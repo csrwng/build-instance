@@ -67,7 +67,7 @@ data "aws_ami" "redhat_linux_8" {
   owners      = ["309956199498"]
   filter {
     name   = "name"
-    values = ["RHEL-8.*"]
+    values = ["RHEL-8.*-x86_64-*"]
   }
 }
 
