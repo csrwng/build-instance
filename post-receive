@@ -7,7 +7,7 @@ do
     echo "Extracting ${newrev} to ${build_dir}"
     git --work-tree="${build_dir}" --git-dir="${GIT_DIR}" checkout -f ${newrev}
     cd ${build_dir}
-    short_ref=${newrev:0:8}
+    short_ref=${newrev:0:9}
     img="quay.io/csrwng/hypershift:${short_ref}"
     mkdir -p "${HOME}/go/cache"
     podman build -t ${img} -v ${HOME}/go/cache:/go/.cache:z .
