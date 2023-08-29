@@ -1,0 +1,13 @@
+#!/bin/bash
+set -euo pipefail
+sgid="$(aws ec2 describe-security-groups --group-names "cewong builder security group" | jq -r '.SecurityGroups[0].GroupId')"
+if [[ sgid == "null" ]]; then
+	echo "Security group not found."
+	exit -1
+fi
+sgruleid="$(aws ec2 describe-security-group-rules --filters Name=group-id,Values=${sgid} | jq -r '.SecurityGroupRules[] | select(.IsEgress == false) | .SecurityGroupRuleId')"
+if [[ sgruleid == "null" ]]; then
+	echo "Security group rule not found."
+	exit -1
+fi
+aws ec2 modify-security-group-rules --group-id ${sgid} --security-group-rules "SecurityGroupRuleId=${sgruleid},SecurityGroupRule={CidrIpv4=0.0.0.0/0,IpProtocol=tcp,FromPort=22,ToPort=22}" > /dev/null

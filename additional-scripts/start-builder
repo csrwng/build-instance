@@ -1,0 +1,13 @@
+#!/bin/bash
+set -euo pipefail
+instance_id="$(aws ec2 describe-instances --filters "Name=tag:Name,Values=cewong-builder" | jq -r ".Reservations[].Instances[].InstanceId")"
+aws ec2 start-instances --instance-ids $instance_id > /dev/null
+instance_ip=""
+while [[ -z "${instance_ip}" ]]; do
+sleep 5
+instance_ip="$(aws ec2 describe-instances --instance-ids ${instance_id} | jq -r ".Reservations[].Instances[].PublicIpAddress")"
+done
+tmp_file="$(mktemp)"
+awk -v ipaddr=$instance_ip '/^Host builder$/ {f=1; print; next} f {$2=ipaddr; f=0; print "  "$0; next} 1' ~/.ssh/config > ${tmp_file}
+mv -f "${tmp_file}" ~/.ssh/config
+chmod 0400 ~/.ssh/config

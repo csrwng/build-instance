@@ -1,0 +1,4 @@
+#!/bin/bash
+set -euo pipefail
+instance_id="$(aws ec2 describe-instances --filters "Name=tag:Name,Values=cewong-builder" | jq -r ".Reservations[].Instances[].InstanceId")"
+aws ec2 stop-instances --instance-ids $instance_id > /dev/null
